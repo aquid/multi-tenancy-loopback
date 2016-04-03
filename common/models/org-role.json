@@ -18,9 +18,10 @@
   "validations": [],
   "relations": {
     "orgUsers": {
-      "type": "belongsTo",
+      "type": "hasMany",
       "model": "orgUser",
-      "foreignKey": "userId"
+      "foreignKey": "orgRoleId",
+      "through": "orgRoleMapping"
     }
   },
   "acls": [],

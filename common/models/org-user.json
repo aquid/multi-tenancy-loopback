@@ -20,7 +20,8 @@
     "orgRoles": {
       "type": "hasMany",
       "model": "orgRole",
-      "foreignKey": "userId"
+      "foreignKey": "orgUserId",
+      "through": "orgRoleMapping"
     },
     "organisation": {
       "type": "belongsTo",
@@ -31,6 +32,11 @@
       "type": "hasMany",
       "model": "items",
       "foreignKey": "creatorId"
+    },
+    "orgRoleMappings": {
+      "type": "hasMany",
+      "model": "orgRoleMapping",
+      "foreignKey": "orgUserId"
     }
   },
   "acls": [],

@@ -47,5 +47,9 @@
   "items": {
     "dataSource": "mongoDs",
     "public": true
+  },
+  "orgRoleMapping": {
+    "dataSource": "mongoDs",
+    "public": true
   }
 }

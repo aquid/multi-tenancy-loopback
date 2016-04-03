@@ -1,6 +1,6 @@
 {
   "name": "organisation",
-  "base": "PersistedModel",
+  "base": "User",
   "idInjection": true,
   "options": {
     "validateUpsert": true
@@ -14,18 +14,13 @@
       "type": "string",
       "required": true
     },
-    "createdAt": {
-      "type": "date",
+    "creator": {
+      "type": "string",
       "required": true
     }
   },
   "validations": [],
   "relations": {
-    "creator": {
-      "type": "hasOne",
-      "model": "orgUser",
-      "foreignKey": "creatorId"
-    },
     "orgUsers": {
       "type": "hasMany",
       "model": "orgUser",
