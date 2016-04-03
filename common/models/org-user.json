@@ -1,0 +1,38 @@
+{
+  "name": "orgUser",
+  "base": "User",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "phone": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "orgRoles": {
+      "type": "hasMany",
+      "model": "orgRole",
+      "foreignKey": "userId"
+    },
+    "organisation": {
+      "type": "belongsTo",
+      "model": "organisation",
+      "foreignKey": "orgId"
+    },
+    "items": {
+      "type": "hasMany",
+      "model": "items",
+      "foreignKey": "creatorId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

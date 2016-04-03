@@ -1,0 +1,41 @@
+{
+  "name": "items",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "required": true
+    },
+    "quantity": {
+      "type": "number",
+      "required": true,
+      "default": "0"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "organisation": {
+      "type": "belongsTo",
+      "model": "organisation",
+      "foreignKey": "orgId"
+    },
+    "creator": {
+      "type": "belongsTo",
+      "model": "orgUser",
+      "foreignKey": "creatorId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

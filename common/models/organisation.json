@@ -1,0 +1,42 @@
+{
+  "name": "organisation",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "string",
+      "required": true
+    },
+    "createdAt": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "creator": {
+      "type": "hasOne",
+      "model": "orgUser",
+      "foreignKey": "creatorId"
+    },
+    "orgUsers": {
+      "type": "hasMany",
+      "model": "orgUser",
+      "foreignKey": "orgId"
+    },
+    "items": {
+      "type": "hasMany",
+      "model": "items",
+      "foreignKey": "orgId"
+    }
+  },
+  "acls": [],
+  "methods": {}
+}
