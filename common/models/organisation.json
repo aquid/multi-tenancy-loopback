@@ -14,6 +14,10 @@
       "type": "string",
       "required": true
     },
+    "phone": {
+      "type": "number",
+      "required": true
+    },
     "creator": {
       "type": "string",
       "required": true

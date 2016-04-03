@@ -1,7 +1,7 @@
 module.exports = function(OrgRoleMapping) {
 	OrgRoleMapping.observe('before save',function (ctx,next){
 		// check if the hook is being called.
-		console.log("before save hook instance");
+		console.log("before save hook instance of orgRoleMapping");
 		// console.log(ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType());
 
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
