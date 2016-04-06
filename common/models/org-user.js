@@ -1,3 +1,5 @@
+// 'use strict'
+// var loopback =  require('loopback');
 module.exports = function(OrgUser) {
 	
 	OrgUser.observe('before save',function (ctx,next){
@@ -7,6 +9,7 @@ module.exports = function(OrgUser) {
 
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
 		if (ctx.instance && ctx.isNewInstance) {
+			// var context = loopback.getCurrentContext();
 			if(ctx.instance.orgId) {
 				ctx.instance.orgId = new ObjectID(ctx.instance.orgId);
 			}

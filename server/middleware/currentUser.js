@@ -44,7 +44,6 @@ module.exports = function(){
 			          	loopbackContext.set('organisation', user.ororganisationgRoles);
 			          	next();
 					}
-					next();
 				})
 				.catch(function(err){
 					next(err);
