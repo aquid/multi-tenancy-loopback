@@ -134,6 +134,20 @@
       "principalId": "$owner",
       "permission": "ALLOW",
       "property": "__count__items"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "create"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$unauthenticated",
+      "permission": "ALLOW",
+      "property": "create"
     }
   ],
   "methods": {}

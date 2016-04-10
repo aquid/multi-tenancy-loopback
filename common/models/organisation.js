@@ -1,4 +1,6 @@
-var Promise = require('bluebird');
+'use strict';
+var secretKey = 'd6F3Efeq';
+
 module.exports = function(Organisation) {
 	Organisation.on('dataSourceAttached', function(){
 		var overridden = Organisation.create;
@@ -10,6 +12,8 @@ module.exports = function(Organisation) {
 		Organisation.create = function(data,cb){
 			var self = this;
 			// setting the password of the user as the creator name as of now.
+			// Just a demo to make things working. 
+			// TODO: use better alternative for password 
             arguments[0].password = arguments[0].creator;
             return overridden.apply(this, arguments);
 		};
@@ -31,6 +35,7 @@ module.exports = function(Organisation) {
 			// make creator and description as undefined as its not requored for
 			// the orgUser model. 
 			// TODO : Delete the extra params from ctx.instance object.
+			ctx.instance.secretAccessKey = secretKey;
 			ctx.instance.creator = undefined;
 			ctx.instance.description  = undefined;
 			// Delete the extra properties associated by ctx.instance

@@ -1,15 +1,73 @@
-// 'use strict'
-// var loopback =  require('loopback');
+'use strict';
+var loopback =  require('loopback');
+var utils = require('loopback-datasource-juggler/lib/utils');
+var _ = require('underscore');
+var secretKey = 'd6F3Efeq'; // TODO: Include it from a file with encrytion and decryption
+
 module.exports = function(OrgUser) {
+	OrgUser.on('dataSourceAttached',function(obj){
+		var create = OrgUser.create;
+		/*
+		* Override the create mehtod and check for the user role and orgID of current user
+		* If no accessToken is present check for secretAccessKey
+		* Allow organisation admins to create user
+		*/
+		OrgUser.create = function(dataForCreate,cb){
+			var self = this;
+			cb = cb || utils.createPromiseCallback();
+			// Get the mongodb _id object.
+			var error;
+ 			var ObjectID = OrgUser.app.datasources.mongoDs.connector.getDefaultIdType();
+			var currentContext = loopback.getCurrentContext(); // get current context
+			var accessToken = currentContext.get('accessToken');
+			var roles = currentContext.get('userRoles'); // get user roles
+			var organisation = currentContext.get('organisation'); // get current user org id
+			if(!accessToken){
+				if(dataForCreate.secretAccessKey  === secretKey){ 
+					// if secretAccessKey matches then create is invoked from organistion
+					delete dataForCreate.secretAccessKey;
+					cb(null,create.apply(self,arguments));
+				}
+				else{
+					error = new Error('Access Denied');
+					error.status =401;
+					cb(error);
+				}
+			}
+			else{
+				/*
+				* Check if the user is having admin permisions for the given
+				* organisation and the oraganisation id is the same as payload
+				*/
+				var isAdmin = _.findWhere(roles,{name: 'orgAdmin'});
+				if(isAdmin){ // allow if admin
+					if(_.isEqual(new ObjectID(dataForCreate.orgId),organisation.id)){
+						cb(null,create.apply(self,arguments));
+						// create.apply(this,arguments);
+					}
+					else{
+						error = new Error('User does not belong to this organisation');
+						error.status = 404;
+						cb(error);
+					}
+				}
+				else{
+					error = new Error('Access Denied');
+					error.status =403;
+					cb(error);
+				}
+			}
+			return cb.promise;
+		};
+	});
+
 	
 	OrgUser.observe('before save',function (ctx,next){
 		// check if the hook is being called.
-		console.log("before save hook instance of orgUser");
+		console.log('before save hook instance of orgUser');
 		// console.log(ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType());
-
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
 		if (ctx.instance && ctx.isNewInstance) {
-			// var context = loopback.getCurrentContext();
 			if(ctx.instance.orgId) {
 				ctx.instance.orgId = new ObjectID(ctx.instance.orgId);
 			}
@@ -19,5 +77,31 @@ module.exports = function(OrgUser) {
 			ctx.instance.modifiedAt = new Date();
 		}
 		next();
+	});
+
+	OrgUser.observe('after save',function(ctx,next){
+		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
+		if(ctx.instance && ctx.isNewInstance){
+			console.log('user created with name: ' + ctx.instance.name);
+			// find or create a role named storeAdmin 
+			ctx.Model.app.models.orgRole.findOrCreate(
+				{where: {name: 'storeAdmin'}}, // find
+      			{name : 'storeAdmin',description:'admin of the store belonging to a organisation'} // or create
+			)
+			.then(function(role){ // Get the orgRole
+				var roleMapper = {
+					orgRoleId : role[0].id,
+					orgUserId : ctx.instance.id
+				};
+				// Create the mapping between orgUser and orgRole
+				return ctx.Model.app.models.orgRoleMapping.create(roleMapper);
+			})
+			.then(function(mapping){ 
+				next();
+			})
+			.catch(function(error){
+				next(error);
+			});
+		}
 	});
 };

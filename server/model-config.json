@@ -42,7 +42,7 @@
   },
   "orgRole": {
     "dataSource": "mongoDs",
-    "public": true
+    "public": false
   },
   "items": {
     "dataSource": "mongoDs",
@@ -50,6 +50,6 @@
   },
   "orgRoleMapping": {
     "dataSource": "mongoDs",
-    "public": true
+    "public": false
   }
 }

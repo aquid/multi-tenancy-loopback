@@ -3,10 +3,10 @@ var loopback = require('loopback');
 
 module.exports = function(){
 	return function currentUser(req,res,next){
-		// console.log("in the middleware"); // check if the middleware is working
+		console.log('in the middleware'); // check if the middleware is working
 		var loopbackContext = loopback.getCurrentContext();
 		if(loopbackContext) {
-			// console.log(req);
+			// console.log(req.app);
 			if(!req.accessToken){
 				return next();
 			}
@@ -33,25 +33,41 @@ module.exports = function(){
 						return next(new Error('No user with this access token was found.'));
 					}
 					else{
+						// console.log(user);
+						// console.log(user.organisation);
 						/*
 						* Get the current user data with fetch its roles and organisation.
 						* set current user to context.
 						* set user roles to constext. 
 						* set user organisation to context.
 						*/
-						loopbackContext.set('currentUser', user);
-			          	loopbackContext.set('userRoles', user.orgRoles);
-			          	loopbackContext.set('organisation', user.ororganisationgRoles);
-			          	next();
+						loopbackContext.set('currentUser', user.id);
+						user.orgRoles(function(err,roles){
+							if(err){
+								return next(new Error('User does not have any roles to perform action.'));
+							}
+							else {
+								loopbackContext.set('userRoles', roles);
+								user.organisation(function(err,org){
+									if(err){
+										return next(new Error('User does not have any roles to perform action.'));
+									}
+									else {
+										loopbackContext.set('organisation', org);
+										next();
+									}
+								});
+							}
+						});
 					}
 				})
 				.catch(function(err){
 					next(err);
-				})
+				});
 			}
 		}
 		else{
 			next();
 		}
-	}
-}
+	};
+};

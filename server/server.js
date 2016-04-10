@@ -1,5 +1,6 @@
 var loopback = require('loopback');
 var boot = require('loopback-boot');
+var Promise = require('bluebird');
 
 var app = module.exports = loopback();
 
