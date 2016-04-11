@@ -71,4 +71,28 @@ module.exports = function(Organisation) {
 			});
 		}
 	});
+
+	Organisation.disableRemoteMethod('find', true);
+	Organisation.disableRemoteMethod('findOne', true);
+	Organisation.disableRemoteMethod('upsert', true);
+	Organisation.disableRemoteMethod('updateAll', true);
+	Organisation.disableRemoteMethod('confirm', true);
+	Organisation.disableRemoteMethod('count', true);
+	Organisation.disableRemoteMethod('exists', true);
+	Organisation.disableRemoteMethod('resetPassword', true);
+	Organisation.disableRemoteMethod('login', true);
+	Organisation.disableRemoteMethod('logout', true);
+	Organisation.disableRemoteMethod('createChangeStream', true);
+	Organisation.disableRemoteMethod('findChangeStream', true);
+	Organisation.disableRemoteMethod('logout', true);
+
+	// Organisation.disableRemoteMethod('updateAttributes', false);
+
+	Organisation.disableRemoteMethod('__count__accessTokens', false);
+	Organisation.disableRemoteMethod('__create__accessTokens', false);
+	Organisation.disableRemoteMethod('__delete__accessTokens', false);
+	Organisation.disableRemoteMethod('__destroyById__accessTokens', false);
+	Organisation.disableRemoteMethod('__findById__accessTokens', false);
+	Organisation.disableRemoteMethod('__get__accessTokens', false);
+	Organisation.disableRemoteMethod('__updateById__accessTokens', false);
 };

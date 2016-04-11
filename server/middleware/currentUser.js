@@ -3,7 +3,7 @@ var loopback = require('loopback');
 
 module.exports = function(){
 	return function currentUser(req,res,next){
-		console.log('in the middleware'); // check if the middleware is working
+		// console.log('in the middleware'); // check if the middleware is working
 		var loopbackContext = loopback.getCurrentContext();
 		if(loopbackContext) {
 			// console.log(req.app);

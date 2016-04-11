@@ -6,14 +6,19 @@ var secretKey = 'd6F3Efeq'; // TODO: Include it from a file with encrytion and d
 
 module.exports = function(OrgUser) {
 	OrgUser.on('dataSourceAttached',function(obj){
-		var create = OrgUser.create;
+		var override = OrgUser.create;
 		/*
 		* Override the create mehtod and check for the user role and orgID of current user
 		* If no accessToken is present check for secretAccessKey
 		* Allow organisation admins to create user
 		*/
-		OrgUser.create = function(dataForCreate,cb){
+		OrgUser.create = function(credentials,include,cb){
 			var self = this;
+
+			if (typeof include === 'function') {
+				cb = include;
+				include = undefined;
+			}
 			cb = cb || utils.createPromiseCallback();
 			// Get the mongodb _id object.
 			var error;
@@ -23,10 +28,9 @@ module.exports = function(OrgUser) {
 			var roles = currentContext.get('userRoles'); // get user roles
 			var organisation = currentContext.get('organisation'); // get current user org id
 			if(!accessToken){
-				if(dataForCreate.secretAccessKey  === secretKey){ 
+				if(credentials.secretAccessKey  === secretKey){ 
 					// if secretAccessKey matches then create is invoked from organistion
-					delete dataForCreate.secretAccessKey;
-					cb(null,create.apply(self,arguments));
+					delete credentials.secretAccessKey;
 				}
 				else{
 					error = new Error('Access Denied');
@@ -41,12 +45,11 @@ module.exports = function(OrgUser) {
 				*/
 				var isAdmin = _.findWhere(roles,{name: 'orgAdmin'});
 				if(isAdmin){ // allow if admin
-					if(_.isEqual(new ObjectID(dataForCreate.orgId),organisation.id)){
-						cb(null,create.apply(self,arguments));
-						// create.apply(this,arguments);
+					if(_.isEqual(new ObjectID(credentials.orgId),organisation.id)){
+						// console.log('Orgs are equal');
 					}
 					else{
-						error = new Error('User does not belong to this organisation');
+						error = new Error('Incorrect organisation data');
 						error.status = 404;
 						cb(error);
 					}
@@ -57,15 +60,19 @@ module.exports = function(OrgUser) {
 					cb(error);
 				}
 			}
-			return cb.promise;
+			Promise.resolve().then(function(){
+				override.call(self, credentials, include, cb);
+			})
+			.catch(cb);
+			return cb.$promise;
 		};
 	});
 
 	
 	OrgUser.observe('before save',function (ctx,next){
 		// check if the hook is being called.
-		console.log('before save hook instance of orgUser');
-		// console.log(ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType());
+		// console.log('before save hook instance of orgUser');
+
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
 		if (ctx.instance && ctx.isNewInstance) {
 			if(ctx.instance.orgId) {
@@ -82,7 +89,7 @@ module.exports = function(OrgUser) {
 	OrgUser.observe('after save',function(ctx,next){
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
 		if(ctx.instance && ctx.isNewInstance){
-			console.log('user created with name: ' + ctx.instance.name);
+			
 			// find or create a role named storeAdmin 
 			ctx.Model.app.models.orgRole.findOrCreate(
 				{where: {name: 'storeAdmin'}}, // find
@@ -104,4 +111,40 @@ module.exports = function(OrgUser) {
 			});
 		}
 	});
+
+	OrgUser.disableRemoteMethod('createChangeStream', true);
+	OrgUser.disableRemoteMethod('findChangeStream', true);
+	OrgUser.disableRemoteMethod('updateAll', true);
+	OrgUser.disableRemoteMethod('confirm', true);
+	OrgUser.disableRemoteMethod('count', true);
+	OrgUser.disableRemoteMethod('find', true);
+	OrgUser.disableRemoteMethod('findOne', true);
+	OrgUser.disableRemoteMethod('upsert', true);
+	OrgUser.disableRemoteMethod('reset', true);
+
+	OrgUser.disableRemoteMethod('__count__accessTokens', false);
+	OrgUser.disableRemoteMethod('__create__accessTokens', false);
+	OrgUser.disableRemoteMethod('__delete__accessTokens', false);
+	OrgUser.disableRemoteMethod('__destroyById__accessTokens', false);
+	OrgUser.disableRemoteMethod('__findById__accessTokens', false);
+	OrgUser.disableRemoteMethod('__get__accessTokens', false);
+	OrgUser.disableRemoteMethod('__updateById__accessTokens', false);
+
+	OrgUser.disableRemoteMethod('__count__orgRoles', false);
+	OrgUser.disableRemoteMethod('__create__orgRoles', false);
+	OrgUser.disableRemoteMethod('__delete__orgRoles', false);
+	OrgUser.disableRemoteMethod('__destroyById__orgRoles', false);
+	OrgUser.disableRemoteMethod('__findById__orgRoles', false);
+	OrgUser.disableRemoteMethod('__get__orgRoles', false);
+	OrgUser.disableRemoteMethod('__updateById__orgRoles', false);
+	OrgUser.disableRemoteMethod('__link__orgRoles', false);
+	OrgUser.disableRemoteMethod('__unlink__orgRoles', false);
+
+	OrgUser.disableRemoteMethod('__count__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__create__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__delete__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__destroyById__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__findById__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__get__orgRoleMappings', false);
+	OrgUser.disableRemoteMethod('__updateById__orgRoleMappings', false);
 };
