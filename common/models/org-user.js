@@ -36,6 +36,7 @@ module.exports = function(OrgUser) {
 					error = new Error('Access Denied');
 					error.status =401;
 					cb(error);
+					return Promise.reject(error);
 				}
 			}
 			else{
@@ -52,12 +53,14 @@ module.exports = function(OrgUser) {
 						error = new Error('Incorrect organisation data');
 						error.status = 404;
 						cb(error);
+						return Promise.reject(error);
 					}
 				}
 				else{
 					error = new Error('Access Denied');
 					error.status =403;
 					cb(error);
+					return Promise.reject(error);
 				}
 			}
 			Promise.resolve().then(function(){
@@ -89,7 +92,6 @@ module.exports = function(OrgUser) {
 	OrgUser.observe('after save',function(ctx,next){
 		var ObjectID = ctx.Model.app.datasources.mongoDs.connector.getDefaultIdType();
 		if(ctx.instance && ctx.isNewInstance){
-			
 			// find or create a role named storeAdmin 
 			ctx.Model.app.models.orgRole.findOrCreate(
 				{where: {name: 'storeAdmin'}}, // find

@@ -45,6 +45,7 @@ module.exports = function(Items) {
 				error = new Error('Invalid credentials');
 				error.status = 404;
 				callback(error);
+				return Promise.reject(error);
 			}
 
 			Promise.resolve().then(function(){
@@ -59,7 +60,6 @@ module.exports = function(Items) {
 	Items.observe('before save',function (ctx,next){
 		// check if the hook is being called.
 		// console.log('before save hook instance of items');
-		
 		var mongoDs = Items.app.datasources.mongoDs;
  		var ObjectID = mongoDs.connector.getDefaultIdType();
 
