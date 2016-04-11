@@ -38,20 +38,17 @@ module.exports = function(Items) {
 			var equalOrg = _.isEqual(new ObjectID(credentials.orgId),organisation.id);
 			var equalUsr = _.isEqual(new ObjectID(credentials.creatorId),currentUser);
 			if(equalOrg && equalUsr){
-				// callback(null);
+				Promise.resolve().then(function(){
+					override.call(self, credentials, filters, callback);
+				})
+				.catch(callback);
 			}
 			else{
 				console.log('error');
 				error = new Error('Invalid credentials');
 				error.status = 404;
 				callback(error);
-				return Promise.reject(error);
 			}
-
-			Promise.resolve().then(function(){
-				override.call(self, credentials, filters, callback);
-			})
-			.catch(callback);
 			return callback.$promise;
 		};
 	});
