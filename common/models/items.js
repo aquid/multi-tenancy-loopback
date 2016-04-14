@@ -4,52 +4,35 @@ var utils = require('loopback-datasource-juggler/lib/utils');
 var _ = require('underscore');
 
 module.exports = function(Items) {
-	
+
 	Items.on('dataSourceAttached',function(obj){
-		var override = Items.create;
+		var originalCreate = Items.create;
 		/*
 		* Override the create mehtod to check for valid user and org
 		* Allow if creatorId is same as current user id
 		* Allow if orgId is same as current user organisation
 		*/
-		Items.create = function(credentials,filters,callback){
+		Items.create = function(data, callback){
 			var self = this;
 
-			if (typeof include === 'function') {
-				callback = filters;
-				filters = undefined;
-			}
-
 			callback = callback || utils.createPromiseCallback();
-			// Get the mongodb _id object.
-			var error;
-			var mongoDs = Items.app.datasources.mongoDs;
- 			var ObjectID = mongoDs.connector.getDefaultIdType();
- 			// get current context
-			var currentContext = loopback.getCurrentContext();
-			// get current user id 
-			var currentUser = currentContext.get('currentUser');
-			// get current user org id
-			var organisation = currentContext.get('organisation'); 
-			/*
-			* Check if the user is same as passed in the credentials
-			* Check if the current user org is same as the credentials org
-			*/
-			var equalOrg = _.isEqual(new ObjectID(credentials.orgId),organisation.id);
-			var equalUsr = _.isEqual(new ObjectID(credentials.creatorId),currentUser);
-			if(equalOrg && equalUsr){
-				Promise.resolve().then(function(){
-					override.call(self, credentials, filters, callback);
-				})
-				.catch(callback);
-			}
-			else{
-				console.log('error');
-				error = new Error('Invalid credentials');
-				error.status = 404;
-				callback(error);
-			}
-			return callback.$promise;
+
+      // get current context
+      var currentContext = loopback.getCurrentContext();
+      if (currentContext)  {
+        // get current user id
+        var currentUser = currentContext.get('currentUser');
+        // get current user org id
+        var organisation = currentContext.get('organisation');
+        data.orgId = organisation.id; // TODO: probably a related method call will do this for you, so don't need to override?
+        data.creatorId = currentUser.id; // TODO: probably a related method call won't do this for you, so override has some merit
+        return originalCreate.call(self, arguments);
+      }
+      else {
+        return originalCreate.call(self, arguments);
+      }
+
+      return callback.promise;
 		};
 	});
 
