@@ -89,7 +89,7 @@
     {
       "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "$owner",
+      "principalId": "$teamMember",
       "permission": "ALLOW",
       "property": "__get__items"
     },
