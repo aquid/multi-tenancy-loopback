@@ -100,7 +100,7 @@ module.exports = function(OrgUser) {
 	OrgUser.observe('after save',function(ctx,next){
 		if(ctx.instance && ctx.isNewInstance){
 			// find or create a role named storeAdmin 
-			ctx.Model.app.models.orgRole.findOrCreate(
+			ctx.Model.app.models.Role.findOrCreate(
 				{where: {name: 'storeAdmin'}}, // find
       			{
       				name : 'storeAdmin',
@@ -113,7 +113,7 @@ module.exports = function(OrgUser) {
 					orgUserId : ctx.instance.id
 				};
 				// Create the mapping between orgUser and orgRole
-				return ctx.Model.app.models.orgRoleMapping.create(roleMapper);
+				return ctx.Model.app.models.RoleMapping.create(roleMapper);
 			})
 			.then(function(mapping){ 
 				next();
