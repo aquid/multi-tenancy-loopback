@@ -12,10 +12,19 @@ module.exports = function(Items) {
 		* Allow if creatorId is same as current user id
 		* Allow if orgId is same as current user organisation
 		*/
-		Items.create = function(data, callback){
-			var self = this;
+    Items.create = function(){
+      var data, callback;
+      if (arguments && arguments.length>0) {
+        data = arguments[0];
+        var possibleCallbackArg = arguments[arguments.length-1]
+        if (typeof possibleCallbackArg === 'function') {
+          callback = possibleCallbackArg;
+        }
+      }
 
-			callback = callback || utils.createPromiseCallback();
+      var self = this;
+
+      callback = callback || utils.createPromiseCallback();
 
       // get current context
       var currentContext = loopback.getCurrentContext();
