@@ -16,7 +16,7 @@ module.exports = function(Items) {
       var data, callback;
       if (arguments && arguments.length>0) {
         data = arguments[0];
-        var possibleCallbackArg = arguments[arguments.length-1]
+        var possibleCallbackArg = arguments[arguments.length-1];
         if (typeof possibleCallbackArg === 'function') {
           callback = possibleCallbackArg;
         }
@@ -26,23 +26,23 @@ module.exports = function(Items) {
 
       callback = callback || utils.createPromiseCallback();
 
-      // get current context
-      var currentContext = loopback.getCurrentContext();
-      if (currentContext)  {
-        // get current user id
-        var currentUser = currentContext.get('currentUser');
-        // get current user org id
-        var organisation = currentContext.get('organisation');
-        data.orgId = organisation.id; // TODO: probably a related method call will do this for you, so don't need to override?
-        data.creatorId = currentUser.id; // TODO: probably a related method call won't do this for you, so override has some merit
-        return originalCreate.call(self, arguments);
-      }
-      else {
-        return originalCreate.call(self, arguments);
-      }
+	      	// get current context
+	      	var currentContext = loopback.getCurrentContext();
+	      	if (currentContext)  {
+		        // get current user id
+		        var currentUser = currentContext.get('currentUser');
+		        // get current user org id
+		        var organisation = currentContext.get('organisation');
+		        data.orgId = organisation.id; // TODO: probably a related method call will do this for you, so don't need to override?
+		        data.creatorId = currentUser.id; // TODO: probably a related method call won't do this for you, so override has some merit
+		        return originalCreate.apply(self, arguments);
+	    	}
+		    else {
+		    	return originalCreate.apply(self, arguments);
+		    }
 
-      return callback.promise;
-		};
+	    return callback.promise;
+	};
 	});
 
 
