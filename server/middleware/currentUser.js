@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var loopback = require('loopback');
 
 module.exports = function(){
@@ -16,7 +16,7 @@ module.exports = function(){
 				// find the user from the token include its roles and organisation
 				req.app.models.orgUser.findById(req.accessToken.userId,{include:[
 					{
-						relation:'orgRoles',
+						relation:'roles',
 						scope : {
 							fields: ['name'] // only include the role name and id
 						}
@@ -41,8 +41,8 @@ module.exports = function(){
 						* set user roles to constext. 
 						* set user organisation to context.
 						*/
-						loopbackContext.set('currentUser', user.id);
-						user.orgRoles(function(err,roles){
+						loopbackContext.set('currentUser', user);
+						user.roles(function(err,roles){
 							if(err){
 								return next(new Error('User does not have any roles to perform action.'));
 							}

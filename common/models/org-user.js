@@ -109,8 +109,8 @@ module.exports = function(OrgUser) {
 			)
 			.then(function(role){ // Get the orgRole
 				var roleMapper = {
-					orgRoleId : role[0].id,
-					orgUserId : ctx.instance.id
+					roleId : role[0].id,
+					principalId : ctx.instance.id
 				};
 				// Create the mapping between orgUser and orgRole
 				return ctx.Model.app.models.RoleMapping.create(roleMapper);
@@ -141,22 +141,4 @@ module.exports = function(OrgUser) {
 	OrgUser.disableRemoteMethod('__findById__accessTokens', false);
 	OrgUser.disableRemoteMethod('__get__accessTokens', false);
 	OrgUser.disableRemoteMethod('__updateById__accessTokens', false);
-
-	OrgUser.disableRemoteMethod('__count__orgRoles', false);
-	OrgUser.disableRemoteMethod('__create__orgRoles', false);
-	OrgUser.disableRemoteMethod('__delete__orgRoles', false);
-	OrgUser.disableRemoteMethod('__destroyById__orgRoles', false);
-	OrgUser.disableRemoteMethod('__findById__orgRoles', false);
-	OrgUser.disableRemoteMethod('__get__orgRoles', false);
-	OrgUser.disableRemoteMethod('__updateById__orgRoles', false);
-	OrgUser.disableRemoteMethod('__link__orgRoles', false);
-	OrgUser.disableRemoteMethod('__unlink__orgRoles', false);
-
-	OrgUser.disableRemoteMethod('__count__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__create__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__delete__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__destroyById__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__findById__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__get__orgRoleMappings', false);
-	OrgUser.disableRemoteMethod('__updateById__orgRoleMappings', false);
 };

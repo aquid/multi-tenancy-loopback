@@ -53,14 +53,14 @@ module.exports = function(Organisation) {
 		    */
 			ctx.Model.app.models.orgUser.create(ctx.instance)
 			.then(function(user){ // Get the orgUser
-				roleMapper.orgUserId = user.id;
+				roleMapper.principalId = user.id;
 				return ctx.Model.app.models.Role.findOrCreate(
 					{where: {name: 'orgAdmin'}}, // find
           			{name : 'orgAdmin',description:'admin of the organisation'} // or create
 				);
 			})
 			.then(function(role){ // Get the orgRole
-				roleMapper.orgRoleId = role[0].id;
+				roleMapper.roleId = role[0].id;
 				return ctx.Model.app.models.RoleMapping.create(roleMapper);
 			})
 			.then(function(mapping){ // Create the mapping between orgUser and orgRole
