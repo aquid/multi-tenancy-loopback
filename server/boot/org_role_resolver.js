@@ -83,6 +83,25 @@ module.exports = function(app){
 					return reject();
 				}
 				else{
+					// TODO: figure out a better way to attach the observer 
+					//       and restrict the include filter for storeAdmins
+					// NOTE: Not very sure if the syntax for attaching the observer 
+					//       is correct. It works as expected but will have to figure 
+					//       out a better way to do this
+					var itemModel = app.models.items;
+					if(typeof itemModel.observe === 'function'){
+						itemModel.observe('access', (ctx, next) => {
+							if(ctx.query.include && !isAdmin){
+								// storeAdmin shouldn't be able to see the creator data. 
+								//it shpuld only be allowed to orgAdmins
+								delete ctx.query.include;
+								return next();
+							}
+							else{
+								return next();
+							}
+						});
+					}
 					return cb(null,true);
 				}
 			}
