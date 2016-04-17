@@ -17,12 +17,6 @@
   },
   "validations": [],
   "relations": {
-    "orgRoles": {
-      "type": "hasMany",
-      "model": "orgRole",
-      "foreignKey": "orgUserId",
-      "through": "orgRoleMapping"
-    },
     "organisation": {
       "type": "belongsTo",
       "model": "organisation",
@@ -32,11 +26,6 @@
       "type": "hasMany",
       "model": "items",
       "foreignKey": "creatorId"
-    },
-    "orgRoleMappings": {
-      "type": "hasMany",
-      "model": "orgRoleMapping",
-      "foreignKey": "orgUserId"
     }
   },
   "acls": [
